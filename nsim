@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+set -euo pipefail
+B=http://127.0.0.1:8765
+cmd=${1:-state}; shift || true
+case "$cmd" in
+  state) curl -s $B/api/state | python3 -m json.tool ;;
+  conns) curl -s $B/api/state | python3 -c '
+import json,sys
+for c in json.load(sys.stdin)["connections"]:
+    print(f'"'"'{c["index"]}  {"EN " if c["enabled"] else "dis"}  {c["name"] or "-":<14} {c["host"]}:{c["port"]}  {c["status"]}  pubs={c["stats"]["pub_count"]}'"'"')' ;;
+  devices) curl -s $B/api/state | python3 -c '
+import json,sys
+s=json.load(sys.stdin)
+names={d["id"]:d["name"] for d in s["devices"]}
+for d in s["devices"]:
+    par=f'"'"' sub-of={names.get(d["parent"],"?")}'"'"' if d["parent"] else ""
+    pts=", ".join(f'"'"'{p["name"]}:{p["datatype"]}'"'"' for p in d["points"])
+    print(f'"'"'{d["id"]}  {d["name"]:<18} {d["kind"]:<8}{par}  [{pts}]'"'"')' ;;
+  binds) curl -s $B/api/state | python3 -c '
+import json,sys
+s=json.load(sys.stdin)
+names={d["id"]:d["name"] for d in s["devices"]}
+for b in s["bindings"]:
+    inc=" +children" if b["include_children"] else ""
+    print(f'"'"'{b["id"]}  {"EN " if b["enabled"] else "dis"}  c{b["connection"]}  {names.get(b["device"],"?"):<18}{inc}  {b["mode"]:<8} {b["data_format"]:<8} {b["topic"]}'"'"')' ;;
+  start) curl -s -X POST $B/api/connections/$1/start ; echo ;;
+  stop)  curl -s -X POST $B/api/connections/$1/stop ; echo ;;
+  pub-now) curl -s -X POST $B/api/bindings/$1/publish ; echo ;;
+  set)   curl -s -X POST $B/api/devices/$1/point -H 'Content-Type: application/json' \
+             -d "{\"name\":\"$2\",\"value\":$3}" ; echo ;;
+  publish) curl -s -X POST $B/api/publish -H 'Content-Type: application/json' \
+             -d "{\"connection\":$1,\"topic\":\"$2\",\"payload\":$(python3 -c "import json,sys;print(json.dumps(sys.argv[1]))" "$3"),\"qos\":${4:-1},\"retain\":${5:-false}}" ; echo ;;
+  logs)  curl -s "$B/api/logs?since=0" | python3 -c "
+import json,sys
+logs=json.load(sys.stdin)['logs'][-int('${1:-30}'):]
+[print(l['ts'][11:19],l['kind'].ljust(5),l['text']) for l in logs]" ;;
+  msgs)  curl -s $B/api/messages | python3 -c '
+import json,sys
+for m in json.load(sys.stdin)["messages"]:
+    print(m["ts"][11:19], f'"'"'c{m["connection"]}'"'"', m["topic"], m["payload"][:200])' ;;
+  *) echo "unknown command: $cmd"; exit 1 ;;
+esac

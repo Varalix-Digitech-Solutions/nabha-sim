@@ -1,0 +1,680 @@
+{
+  "connections": [
+    {
+      "index": 1,
+      "enabled": false,
+      "name": "nabha-cloud",
+      "client_id": "",
+      "host": "mqtt.nabha.cloud",
+      "port": 1883,
+      "username": "",
+      "password": "",
+      "tls": false,
+      "timeout": 10,
+      "keepalive": 60,
+      "version": "3.1.1",
+      "lwt_topic": "orgs/YOUR_ORG_ID/status/YOUR_DEVICE_TOKEN",
+      "lwt_qos": 1,
+      "lwt_retain": false,
+      "lwt_payload": "offline"
+    },
+    {
+      "index": 2,
+      "enabled": false,
+      "name": "",
+      "client_id": "",
+      "host": "mqtt.nabha.cloud",
+      "port": 1883,
+      "username": "",
+      "password": "",
+      "tls": false,
+      "timeout": 10,
+      "keepalive": 60,
+      "version": "5.0",
+      "lwt_topic": "",
+      "lwt_qos": 0,
+      "lwt_retain": false,
+      "lwt_payload": ""
+    },
+    {
+      "index": 3,
+      "enabled": false,
+      "name": "",
+      "client_id": "",
+      "host": "mqtt.nabha.cloud",
+      "port": 1883,
+      "username": "",
+      "password": "",
+      "tls": false,
+      "timeout": 10,
+      "keepalive": 60,
+      "version": "3.1.1",
+      "lwt_topic": "",
+      "lwt_qos": 0,
+      "lwt_retain": false,
+      "lwt_payload": ""
+    },
+    {
+      "index": 4,
+      "enabled": false,
+      "name": "",
+      "client_id": "",
+      "host": "mqtt.nabha.cloud",
+      "port": 1883,
+      "username": "",
+      "password": "",
+      "tls": false,
+      "timeout": 10,
+      "keepalive": 60,
+      "version": "3.1.1",
+      "lwt_topic": "",
+      "lwt_qos": 0,
+      "lwt_retain": false,
+      "lwt_payload": ""
+    }
+  ],
+  "devices": [
+    {
+      "id": "env0001",
+      "name": "env-sensor",
+      "kind": "direct",
+      "parent": "",
+      "address": "",
+      "preset": "env_sensor",
+      "points": [
+        {
+          "name": "temperature",
+          "datatype": "float",
+          "sim": "walk",
+          "min": 18,
+          "max": 28,
+          "step": 0.15,
+          "unit": "\u00b0C",
+          "decimals": 1,
+          "values": [],
+          "init": null
+        },
+        {
+          "name": "humidity",
+          "datatype": "float",
+          "sim": "walk",
+          "min": 30,
+          "max": 70,
+          "step": 0.6,
+          "unit": "%",
+          "decimals": 1,
+          "values": [],
+          "init": null
+        },
+        {
+          "name": "pressure",
+          "datatype": "float",
+          "sim": "walk",
+          "min": 980,
+          "max": 1020,
+          "step": 0.8,
+          "unit": "hPa",
+          "decimals": 1,
+          "values": [],
+          "init": null
+        }
+      ]
+    },
+    {
+      "id": "gw000001",
+      "name": "gateway-1",
+      "kind": "gateway",
+      "parent": "",
+      "address": "",
+      "preset": "status",
+      "points": [
+        {
+          "name": "cpu",
+          "datatype": "float",
+          "sim": "walk",
+          "min": 4,
+          "max": 72,
+          "step": 3,
+          "unit": "%",
+          "decimals": 2,
+          "values": [],
+          "init": null
+        },
+        {
+          "name": "mem",
+          "datatype": "float",
+          "sim": "walk",
+          "min": 30,
+          "max": 82,
+          "step": 2,
+          "unit": "%",
+          "decimals": 2,
+          "values": [],
+          "init": null
+        },
+        {
+          "name": "signal_strength",
+          "datatype": "int",
+          "sim": "walk",
+          "min": -78,
+          "max": -42,
+          "step": 3,
+          "unit": "dBm",
+          "decimals": 2,
+          "values": [],
+          "init": null
+        },
+        {
+          "name": "uptime",
+          "datatype": "int",
+          "sim": "increment",
+          "min": 0,
+          "max": 999999999,
+          "step": 1,
+          "unit": "s",
+          "decimals": 2,
+          "values": [],
+          "init": null
+        },
+        {
+          "name": "online",
+          "datatype": "bool",
+          "sim": "fixed",
+          "min": 0,
+          "max": 1,
+          "step": 0.05,
+          "unit": "",
+          "decimals": 2,
+          "values": [],
+          "init": null
+        }
+      ]
+    },
+    {
+      "id": "sub00001",
+      "name": "temp-humidity",
+      "kind": "zigbee",
+      "parent": "gw000001",
+      "address": "",
+      "preset": "temp_humidity",
+      "points": [
+        {
+          "name": "temperature",
+          "datatype": "float",
+          "sim": "walk",
+          "min": 15,
+          "max": 32,
+          "step": 0.15,
+          "unit": "\u00b0C",
+          "decimals": 2,
+          "values": [],
+          "init": null
+        },
+        {
+          "name": "humidity",
+          "datatype": "float",
+          "sim": "walk",
+          "min": 25,
+          "max": 75,
+          "step": 0.6,
+          "unit": "%",
+          "decimals": 2,
+          "values": [],
+          "init": null
+        },
+        {
+          "name": "battery",
+          "datatype": "int",
+          "sim": "walk",
+          "min": 20,
+          "max": 100,
+          "step": 1,
+          "unit": "%",
+          "decimals": 2,
+          "values": [],
+          "init": null
+        },
+        {
+          "name": "linkquality",
+          "datatype": "int",
+          "sim": "walk",
+          "min": 40,
+          "max": 255,
+          "step": 6,
+          "unit": "",
+          "decimals": 2,
+          "values": [],
+          "init": null
+        }
+      ]
+    },
+    {
+      "id": "egw12345",
+      "name": "egw12345",
+      "kind": "gateway",
+      "parent": "",
+      "address": "M83XBEJ4G2352000894",
+      "preset": "",
+      "points": []
+    },
+    {
+      "id": "0413D585",
+      "name": "temp-humidity-0413D585",
+      "kind": "enocean",
+      "parent": "egw12345",
+      "address": "0413D585",
+      "preset": "A5-04-01",
+      "points": [
+        {
+          "name": "HUM",
+          "datatype": "float",
+          "sim": "walk",
+          "min": 45,
+          "max": 75,
+          "step": 0.6,
+          "unit": "%",
+          "decimals": 1,
+          "values": [],
+          "init": null
+        },
+        {
+          "name": "TMP",
+          "datatype": "float",
+          "sim": "walk",
+          "min": 20,
+          "max": 30,
+          "step": 0.15,
+          "unit": "\u00b0C",
+          "decimals": 1,
+          "values": [],
+          "init": null
+        },
+        {
+          "name": "LRNB",
+          "datatype": "string",
+          "sim": "fixed",
+          "min": 0,
+          "max": 0,
+          "step": 0,
+          "unit": "",
+          "decimals": 2,
+          "values": [
+            "Data telegram"
+          ],
+          "init": null
+        },
+        {
+          "name": "TSN",
+          "datatype": "string",
+          "sim": "fixed",
+          "min": 0,
+          "max": 0,
+          "step": 0,
+          "unit": "",
+          "decimals": 2,
+          "values": [
+            "available"
+          ],
+          "init": null
+        }
+      ]
+    },
+    {
+      "id": "05A312EC",
+      "name": "co2-05A312EC",
+      "kind": "enocean",
+      "parent": "egw12345",
+      "address": "05A312EC",
+      "preset": "A5-09-04",
+      "points": [
+        {
+          "name": "HUM",
+          "datatype": "float",
+          "sim": "walk",
+          "min": 45,
+          "max": 70,
+          "step": 0.6,
+          "unit": "%",
+          "decimals": 1,
+          "values": [],
+          "init": null
+        },
+        {
+          "name": "Conc",
+          "datatype": "float",
+          "sim": "walk",
+          "min": 400,
+          "max": 1200,
+          "step": 18,
+          "unit": "ppm",
+          "decimals": 1,
+          "values": [],
+          "init": null
+        },
+        {
+          "name": "TMP",
+          "datatype": "float",
+          "sim": "walk",
+          "min": 20,
+          "max": 30,
+          "step": 0.15,
+          "unit": "\u00b0C",
+          "decimals": 1,
+          "values": [],
+          "init": null
+        },
+        {
+          "name": "LRNB",
+          "datatype": "string",
+          "sim": "fixed",
+          "min": 0,
+          "max": 0,
+          "step": 0,
+          "unit": "",
+          "decimals": 2,
+          "values": [
+            "Data telegram"
+          ],
+          "init": null
+        },
+        {
+          "name": "HSN",
+          "datatype": "string",
+          "sim": "fixed",
+          "min": 0,
+          "max": 0,
+          "step": 0,
+          "unit": "",
+          "decimals": 2,
+          "values": [
+            "Humidity Sensor avaialbe"
+          ],
+          "init": null
+        },
+        {
+          "name": "TSN",
+          "datatype": "string",
+          "sim": "fixed",
+          "min": 0,
+          "max": 0,
+          "step": 0,
+          "unit": "",
+          "decimals": 2,
+          "values": [
+            "Temperature Sensor avaialbe"
+          ],
+          "init": null
+        }
+      ]
+    },
+    {
+      "id": "04143EF3",
+      "name": "occupancy-04143EF3",
+      "kind": "enocean",
+      "parent": "egw12345",
+      "address": "04143EF3",
+      "preset": "A5-07-03",
+      "points": [
+        {
+          "name": "SVC",
+          "datatype": "float",
+          "sim": "walk",
+          "min": 2.8,
+          "max": 3.3,
+          "step": 0.03,
+          "unit": "V",
+          "decimals": 1,
+          "values": [],
+          "init": null
+        },
+        {
+          "name": "ILL",
+          "datatype": "float",
+          "sim": "walk",
+          "min": 0,
+          "max": 400,
+          "step": 20,
+          "unit": "lx",
+          "decimals": 1,
+          "values": [],
+          "init": null
+        },
+        {
+          "name": "PIRS",
+          "datatype": "enum",
+          "sim": "walk",
+          "min": 0,
+          "max": 1,
+          "step": 0.05,
+          "unit": "",
+          "decimals": 2,
+          "values": [
+            "Motion detected",
+            "Uncertain of occupancy status"
+          ],
+          "init": null
+        },
+        {
+          "name": "LRNB",
+          "datatype": "string",
+          "sim": "fixed",
+          "min": 0,
+          "max": 0,
+          "step": 0,
+          "unit": "",
+          "decimals": 2,
+          "values": [
+            "Data telegram"
+          ],
+          "init": null
+        }
+      ]
+    },
+    {
+      "id": "zbgw0001",
+      "name": "zb-coordinator",
+      "kind": "gateway",
+      "parent": "",
+      "address": "zb-coordinator",
+      "preset": "",
+      "points": []
+    },
+    {
+      "id": "zb000001",
+      "name": "living_room",
+      "kind": "zigbee",
+      "parent": "zbgw0001",
+      "address": "0x00158d0001",
+      "preset": "temp_humidity",
+      "points": [
+        {
+          "name": "temperature",
+          "datatype": "float",
+          "sim": "walk",
+          "min": 15,
+          "max": 32,
+          "step": 0.15,
+          "unit": "\u00b0C",
+          "decimals": 2,
+          "values": [],
+          "init": null
+        },
+        {
+          "name": "humidity",
+          "datatype": "float",
+          "sim": "walk",
+          "min": 25,
+          "max": 75,
+          "step": 0.6,
+          "unit": "%",
+          "decimals": 2,
+          "values": [],
+          "init": null
+        },
+        {
+          "name": "battery",
+          "datatype": "int",
+          "sim": "walk",
+          "min": 20,
+          "max": 100,
+          "step": 1,
+          "unit": "%",
+          "decimals": 2,
+          "values": [],
+          "init": null
+        },
+        {
+          "name": "linkquality",
+          "datatype": "int",
+          "sim": "walk",
+          "min": 40,
+          "max": 255,
+          "step": 6,
+          "unit": "",
+          "decimals": 2,
+          "values": [],
+          "init": null
+        }
+      ]
+    },
+    {
+      "id": "zb000002",
+      "name": "front_door",
+      "kind": "zigbee",
+      "parent": "zbgw0001",
+      "address": "0x00158d0002",
+      "preset": "door_sensor",
+      "points": [
+        {
+          "name": "contact",
+          "datatype": "bool",
+          "sim": "walk",
+          "min": 0,
+          "max": 1,
+          "step": 0.03,
+          "unit": "",
+          "decimals": 2,
+          "values": [],
+          "init": null
+        },
+        {
+          "name": "battery",
+          "datatype": "int",
+          "sim": "walk",
+          "min": 20,
+          "max": 100,
+          "step": 1,
+          "unit": "%",
+          "decimals": 2,
+          "values": [],
+          "init": null
+        },
+        {
+          "name": "linkquality",
+          "datatype": "int",
+          "sim": "walk",
+          "min": 40,
+          "max": 255,
+          "step": 6,
+          "unit": "",
+          "decimals": 2,
+          "values": [],
+          "init": null
+        }
+      ]
+    }
+  ],
+  "bindings": [
+    {
+      "id": "bind0001",
+      "connection": 1,
+      "enabled": false,
+      "device": "env0001",
+      "include_children": false,
+      "data_format": "flat",
+      "template": "",
+      "topic": "orgs/YOUR_ORG_ID/telemetry/YOUR_DEVICE_TOKEN",
+      "qos": 1,
+      "retain": false,
+      "mode": "periodic",
+      "interval": 10,
+      "pub_type": "processed",
+      "cov_deadband": 0.5,
+      "cov_min_interval": 2,
+      "cov_heartbeat": 300
+    },
+    {
+      "id": "bind0002",
+      "connection": 1,
+      "enabled": false,
+      "device": "gw000001",
+      "include_children": true,
+      "data_format": "json",
+      "template": "",
+      "topic": "orgs/YOUR_ORG_ID/telemetry/YOUR_GATEWAY_TOKEN",
+      "qos": 1,
+      "retain": false,
+      "mode": "periodic",
+      "interval": 10,
+      "pub_type": "processed",
+      "cov_deadband": 0.5,
+      "cov_min_interval": 2,
+      "cov_heartbeat": 300
+    },
+    {
+      "id": "bind0003",
+      "connection": 1,
+      "enabled": false,
+      "device": "egw12345",
+      "include_children": true,
+      "data_format": "enocean_gw",
+      "template": "",
+      "topic": "orgs/YOUR_ORG_ID/telemetry/YOUR_GATEWAY_TOKEN",
+      "qos": 1,
+      "retain": false,
+      "mode": "periodic",
+      "interval": 10,
+      "pub_type": "processed",
+      "cov_deadband": 0.5,
+      "cov_min_interval": 2,
+      "cov_heartbeat": 300
+    },
+    {
+      "connection": 1,
+      "enabled": false,
+      "template": "",
+      "qos": 1,
+      "retain": false,
+      "mode": "periodic",
+      "interval": 10,
+      "pub_type": "processed",
+      "cov_deadband": 0.5,
+      "cov_min_interval": 2,
+      "cov_heartbeat": 300,
+      "id": "bind0004",
+      "device": "zbgw0001",
+      "include_children": true,
+      "data_format": "zigbee2mqtt",
+      "topic": "orgs/YOUR_ORG_ID/telemetry/YOUR_GATEWAY_TOKEN"
+    },
+    {
+      "connection": 1,
+      "enabled": false,
+      "template": "",
+      "qos": 1,
+      "retain": false,
+      "mode": "periodic",
+      "interval": 10,
+      "pub_type": "processed",
+      "cov_deadband": 0.5,
+      "cov_min_interval": 2,
+      "cov_heartbeat": 300,
+      "id": "bind0005",
+      "device": "env0001",
+      "include_children": false,
+      "data_format": "array",
+      "topic": "orgs/YOUR_ORG_ID/telemetry/YOUR_DEVICE_TOKEN"
+    }
+  ],
+  "subs": []
+}

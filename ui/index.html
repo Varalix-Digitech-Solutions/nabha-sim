@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>nabha-sim · Device Simulator</title>
+<style>
+:root{
+  --bg:#eef1f4; --panel:#ffffff; --line:#d7dde3; --head:#2f6fb2; --head2:#265d96;
+  --text:#26313b; --mut:#6b7885; --ok:#1d9d55; --bad:#c94437; --warn:#c98a1f;
+  --accent:#2f6fb2; --chip:#e8eef5;
+}
+*{box-sizing:border-box}
+body{margin:0;font:13px/1.45 "Segoe UI",system-ui,Arial,sans-serif;background:var(--bg);color:var(--text)}
+header{background:linear-gradient(180deg,var(--head),var(--head2));color:#fff;display:flex;align-items:center;gap:14px;padding:0 18px;height:52px}
+header .logo{font-size:16px;font-weight:600;letter-spacing:.4px}
+header .logo span{opacity:.75;font-weight:400}
+header .crumb{margin-left:auto;font-size:12px;opacity:.85}
+.layout{display:flex;min-height:calc(100vh - 52px)}
+nav{width:180px;background:#33414e;color:#c9d4de;padding-top:10px;flex-shrink:0}
+nav .grp{padding:8px 16px;font-size:11px;text-transform:uppercase;letter-spacing:.8px;color:#8296a8}
+nav a{display:block;padding:9px 16px 9px 26px;color:#c9d4de;text-decoration:none;cursor:pointer;border-left:3px solid transparent}
+nav a.active{background:#2a3540;color:#fff;border-left-color:#4da3ff}
+nav a:hover{background:#2e3a46}
+main{flex:1;padding:16px 20px 60px;max-width:1320px}
+.page{display:none}.page.on{display:block}
+h2.sec{font-size:14px;margin:22px 0 8px;padding:7px 12px;background:#dfe7ee;border:1px solid var(--line);border-bottom:0;color:#26415c;display:flex;align-items:center;gap:10px}
+h2.sec:first-of-type{margin-top:4px}
+h2.sec .right{margin-left:auto;display:flex;gap:8px}
+table{width:100%;border-collapse:collapse;background:var(--panel)}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:center;font-size:12.5px}
+th{background:#f3f6f9;color:#3d4f60;font-weight:600}
+td.l{text-align:left}
+.wrap{overflow-x:auto;border:1px solid var(--line)}
+.status{font-weight:600}
+.status.Connected{color:var(--ok)} .status.Connecting{color:var(--warn)}
+.status.Disconnected{color:var(--mut)} .status.Error{color:var(--bad)}
+button{font:12.5px "Segoe UI",system-ui;border:1px solid #b9c6d2;background:#fff;color:#2d3d4d;padding:4px 12px;border-radius:3px;cursor:pointer}
+button:hover{background:#f0f5fa}
+button.pri{background:var(--accent);border-color:var(--accent);color:#fff}
+button.pri:hover{background:#265d96}
+button.dng{color:var(--bad);border-color:#dcb1ab}
+button.sm{padding:2px 8px;font-size:11.5px}
+.tag{display:inline-block;background:var(--chip);border:1px solid #cfdae6;border-radius:3px;padding:1px 7px;font-size:11px;color:#33506b}
+.kindchip{display:inline-block;border-radius:3px;padding:1px 8px;font-size:11px;font-weight:600}
+.kind-gateway{background:#e4ecf7;color:#2c5c94}.kind-direct{background:#e7f2e9;color:#256d40}
+.kind-zigbee{background:#fdf1dd;color:#9a6a12}.kind-enocean{background:#f0e7f7;color:#6a3f97}
+.kind-modbus{background:#fbe9e7;color:#a04336}
+.en{color:var(--ok);font-weight:600}.dis{color:var(--mut)}
+.sublabel{color:var(--mut);font-size:11px}
+.gs{background:var(--panel);border:1px solid var(--line);padding:14px 16px}
+.gs table td{text-align:left}
+.gs .fieldname,.fieldname{width:160px;background:#f7fafc;font-weight:600;color:#3d4f60}
+input[type=text],input[type=number],input[type=password],select,textarea{
+  width:100%;padding:5px 8px;border:1px solid #b9c6d2;border-radius:3px;font:12.5px "Segoe UI";background:#fff;color:var(--text)}
+textarea{height:52px;resize:vertical}
+.radios{display:flex;gap:14px;flex-wrap:wrap}
+.radios label{display:flex;align-items:center;gap:5px;cursor:pointer}
+.radios input{width:auto}
+.tabs{display:flex;gap:4px;margin-bottom:-1px}
+.tabs button{border-radius:4px 4px 0 0;border-bottom:0;padding:6px 22px;background:#e4eaf0}
+.tabs button.on{background:var(--panel);font-weight:600;color:var(--accent)}
+.bar{margin-top:12px;display:flex;gap:8px;align-items:center}
+.overlay{position:fixed;inset:0;background:rgba(20,30,40,.45);display:none;align-items:flex-start;justify-content:center;padding:30px 16px;z-index:50;overflow:auto}
+.overlay.show{display:flex}
+.modal{background:#fff;border-radius:6px;min-width:640px;max-width:960px;width:100%;box-shadow:0 12px 40px rgba(0,0,0,.25);margin-bottom:40px}
+.modal h3{margin:0;padding:12px 18px;background:#f3f6f9;border-bottom:1px solid var(--line);font-size:14px;border-radius:6px 6px 0 0}
+.modal .body{padding:16px 18px;display:grid;grid-template-columns:150px 1fr;gap:10px 12px;align-items:center}
+.modal .body .full{grid-column:1/-1}
+.modal .body label.fn{font-weight:600;color:#3d4f60}
+.modal .foot{padding:12px 18px;border-top:1px solid var(--line);display:flex;gap:8px;justify-content:flex-end;align-items:center}
+.hint{font-size:11px;color:var(--mut);grid-column:2}
+.pointsgrid th,.pointsgrid td{padding:4px 6px}
+.pointsgrid input,.pointsgrid select{padding:3px 6px;font-size:12px}
+.pointrow{display:flex;gap:6px;align-items:center;margin:2px 0}
+.pointrow .pv{font-family:Consolas,monospace;background:#f4f7fa;border:1px solid #e0e7ee;padding:2px 8px;border-radius:3px;min-width:90px}
+.mon{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.logbox{background:#131a21;color:#c7d3dd;font:12px Consolas,monospace;border-radius:4px;height:420px;overflow-y:auto;padding:10px 12px}
+.logbox .pub{color:#7dd3a0}.logbox .sub{color:#7db8f0}.logbox .conn{color:#e8c877}
+.logbox .error{color:#f08d84}.logbox .sim{color:#c9a2e8}.logbox .sys{color:#9aa8b5}
+.logbox div{white-space:pre-wrap;word-break:break-all;margin-bottom:2px}
+.small{font-size:11px;color:var(--mut)}
+.live{font-family:Consolas,monospace;font-size:11px;color:#33506b}
+.err{color:var(--bad);font-size:12px}
+@media (max-width:1000px){.mon{grid-template-columns:1fr}.modal{min-width:0}}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">NABHA-SIM <span>· Device Simulator</span></div>
+  <div class="crumb" id="crumb">Devices</div>
+</header>
+<div class="layout">
+<nav>
+  <div class="grp">Simulator</div>
+  <a data-page="devices" class="active" onclick="showPage('devices')">Devices</a>
+  <a data-page="publish" onclick="showPage('publish')">Publish</a>
+  <a data-page="subscribe" onclick="showPage('subscribe')">Subscribe</a>
+  <a data-page="conns" onclick="showPage('conns')">IoT &gt; MQTT</a>
+  <a data-page="monitor" onclick="showPage('monitor')">Monitor</a>
+  <div class="grp">Help</div>
+  <a href="/api/docs" target="_blank">API Docs</a>
+</nav>
+<main>
+
+<div class="page on" id="page-devices">
+<h2 class="sec">Devices
+  <span class="right"><button class="pri sm" onclick="openDev(null)">+ Add Device</button></span></h2>
+<div class="wrap"><table id="devList">
+<thead><tr><th>Index</th><th>Name</th><th>Kind</th><th>Parent</th><th>Address / ID</th>
+<th>Preset</th><th>Points</th><th>Live Values</th><th>Operation</th></tr></thead>
+<tbody></tbody>
+</table></div>
+<div class="small" style="margin-top:6px">A device attached to a gateway becomes its <b>sub-device</b>; a gateway binding on the Publish page can include all its sub-devices in one payload.</div>
+</div>
+
+<div class="page" id="page-publish">
+<h2 class="sec">Pub Configuration
+  <span class="right"><button class="pri sm" onclick="openBind(null)">+ Add Pub</button></span></h2>
+<div class="wrap"><table id="bindList">
+<thead><tr><th>Index</th><th>Conn</th><th>Data Collection</th><th>Device</th><th>Data Format</th>
+<th>Pub Topic</th><th>Qos</th><th>Retain</th><th>Pub Mode</th><th>Interval(s)</th><th>Pub Type</th><th>Operation</th></tr></thead>
+<tbody></tbody>
+</table></div>
+</div>
+
+<div class="page" id="page-subscribe">
+<h2 class="sec">Sub Configuration
+  <span class="right"><button class="pri sm" onclick="openSub(null)">+ Add Sub</button></span></h2>
+<div class="wrap"><table id="subList">
+<thead><tr><th>Index</th><th>Conn</th><th>Enable</th><th>Sub Type</th><th>Sub Topic</th><th>Sub Qos</th><th>Operation</th></tr></thead>
+<tbody></tbody>
+</table></div>
+</div>
+
+<div class="page" id="page-conns">
+<h2 class="sec">MQTT List</h2>
+<div class="wrap"><table id="connList">
+<thead><tr><th>Index</th><th>Enable</th><th>Name</th><th>Client id</th><th>Host</th><th>Port</th><th>Connection Status</th><th>Start/Stop</th></tr></thead>
+<tbody></tbody>
+</table></div>
+
+<h2 class="sec">General Settings</h2>
+<div class="gs">
+  <div class="tabs" id="gsTabs"></div>
+  <table id="gsForm"><tbody>
+    <tr><td class="fieldname">Enable</td><td><div class="radios">
+      <label><input type="radio" name="gs_en" value="1"> Enabled</label>
+      <label><input type="radio" name="gs_en" value="0"> Disabled</label></div></td></tr>
+    <tr><td class="fieldname">Name</td><td><input type="text" id="gs_name"></td></tr>
+    <tr><td class="fieldname">Client id</td><td><input type="text" id="gs_client_id" placeholder="auto if empty"></td></tr>
+    <tr><td class="fieldname">Host</td><td><input type="text" id="gs_host" value="mqtt.nabha.cloud" readonly title="Fixed to the nabha-cloud ingest broker"><span class="small" style="margin-left:8px">🔒 nabha-cloud</span></td></tr>
+    <tr><td class="fieldname">Port</td><td><input type="number" id="gs_port" value="1883" readonly title="Fixed to the nabha-cloud ingest broker"></td></tr>
+    <tr><td class="fieldname">User Name</td><td><input type="text" id="gs_username"></td></tr>
+    <tr><td class="fieldname">Password</td><td><input type="password" id="gs_password"></td></tr>
+    <tr><td class="fieldname">TLS</td><td><div class="radios">
+      <label><input type="radio" name="gs_tls" value="1"> Enabled</label>
+      <label><input type="radio" name="gs_tls" value="0"> Disabled</label></div></td></tr>
+    <tr><td class="fieldname">Timeout s</td><td><input type="number" id="gs_timeout" value="10"></td></tr>
+    <tr><td class="fieldname">Keep alive s</td><td><input type="number" id="gs_keepalive" value="60"></td></tr>
+    <tr><td class="fieldname">Version</td><td><div class="radios">
+      <label><input type="radio" name="gs_ver" value="3.1"> V3.1</label>
+      <label><input type="radio" name="gs_ver" value="3.1.1"> V3.1.1</label>
+      <label><input type="radio" name="gs_ver" value="5.0"> V5.0</label></div></td></tr>
+    <tr><td class="fieldname">LWT Topic</td><td><input type="text" id="gs_lwt_topic" placeholder="devices/&lt;id&gt;/status"></td></tr>
+    <tr><td class="fieldname">LWT Qos</td><td><div class="radios">
+      <label><input type="radio" name="gs_lwtq" value="0"> 0</label>
+      <label><input type="radio" name="gs_lwtq" value="1"> 1</label>
+      <label><input type="radio" name="gs_lwtq" value="2"> 2</label></div></td></tr>
+    <tr><td class="fieldname">LWT Retain</td><td><div class="radios">
+      <label><input type="radio" name="gs_lwtr" value="1"> Enabled</label>
+      <label><input type="radio" name="gs_lwtr" value="0"> Disabled</label></div></td></tr>
+    <tr><td class="fieldname">LWT Payload</td><td><textarea id="gs_lwt_payload" placeholder='{"online": false}'></textarea></td></tr>
+  </tbody></table>
+  <div class="bar">
+    <button class="pri" onclick="saveConn()">Save</button>
+    <button onclick="loadConnForm(gsIndex)">Reset</button>
+    <span class="small" id="gsMsg"></span>
+  </div>
+</div>
+</div>
+
+<div class="page" id="page-monitor">
+<h2 class="sec">Monitor</h2>
+<div class="mon">
+  <div>
+    <div class="small" style="margin-bottom:4px">Event log (pub / sub / connection / sim)</div>
+    <div class="logbox" id="logBox"></div>
+  </div>
+  <div>
+    <div class="small" style="margin-bottom:4px">Received messages (subscriptions)</div>
+    <div class="logbox" id="msgBox"></div>
+  </div>
+</div>
+</div>
+
+</main>
+</div>
+
+<div class="overlay" id="devOverlay">
+<div class="modal">
+  <h3 id="devTitle">Add Device</h3>
+  <div class="body">
+    <label class="fn">Name</label><input type="text" id="d_name" placeholder="12F-BI-test-223">
+    <label class="fn">Kind</label><select id="d_kind" onchange="kindChanged()"></select>
+    <label class="fn">Attach to gateway</label><select id="d_parent"><option value="">— none (standalone) —</option></select>
+    <div class="hint">Pick a gateway to make this a sub-device of it. Gateways themselves can't be attached.</div>
+    <label class="fn">Address / ID</label><input type="text" id="d_address" placeholder="EnOcean chip ID / IEEE addr / unit id">
+    <label class="fn">Preset</label><div style="display:flex;gap:8px">
+      <select id="d_preset" style="flex:1" onchange="loadPreset()"></select>
+      <button onclick="loadPreset()">Reload points</button>
+    </div>
+    <div class="hint">Picking a preset loads its points below (replacing them) — then edit freely.
+      More presets appear when you change <b>Kind</b> above (EnOcean EEP profiles, Zigbee, Modbus).</div>
+    <div class="full">
+      <label class="fn" style="display:block;margin:4px 0 6px">Data points
+        <button class="sm" style="margin-left:10px" onclick="addPointRow()">+ Add Point</button></label>
+      <div class="wrap"><table class="pointsgrid" id="pointsGrid">
+        <thead><tr><th>Name</th><th>Datatype</th><th>Sim</th><th>Min</th><th>Max</th>
+        <th>Step / prob</th><th>Unit</th><th>Dec</th><th>Enum values (comma)</th><th>Init</th><th></th></tr></thead>
+        <tbody></tbody>
+      </table></div>
+      <div class="small" style="margin-top:4px">
+        <b>Sim:</b> <b>walk</b> = bounded random walk · <b>increment</b> = counter (energy, uptime) ·
+        <b>fixed</b> = static until you override it.<br>
+        <b>Step</b> depends on the datatype: for <b>float/int</b> it's the max change per tick;
+        for <b>bool/enum/string</b> it's the <b>probability of changing per tick (0–1)</b> — e.g. 0.05 ≈ once every 20s.
+        Greyed-out boxes don't apply to that datatype. A <b>bool</b> publishes real <code>true</code>/<code>false</code>
+        (want 0/1? use an <b>int</b> with min 0 / max 1).</div>
+    </div>
+    <div class="full" id="liveWrap"></div>
+  </div>
+  <div class="foot">
+    <span class="err" id="devErr"></span>
+    <button onclick="closeOverlays()">Cancel</button>
+    <button class="pri" onclick="saveDev()">Save Device</button>
+  </div>
+</div>
+</div>
+
+<div class="overlay" id="bindOverlay">
+<div class="modal" style="max-width:760px">
+  <h3 id="bindTitle">Pub Configuration</h3>
+  <div class="body">
+    <label class="fn">Connection</label><select id="b_connection"><option>1</option><option>2</option><option>3</option><option>4</option></select>
+    <label class="fn">Data Collection</label><div class="radios">
+      <label><input type="radio" name="b_en" value="1" checked> Enabled</label>
+      <label><input type="radio" name="b_en" value="0"> Disabled</label></div>
+    <label class="fn">Device</label><select id="b_device" onchange="bindDevChanged()"></select>
+    <label class="fn">Include sub-devices</label><div class="radios">
+      <label><input type="radio" name="b_inc" value="1"> Yes — aggregate children</label>
+      <label><input type="radio" name="b_inc" value="0" checked> No</label></div>
+    <label class="fn">Data Format</label><select id="b_data_format" onchange="bfmtChanged()">
+      <optgroup label="Structured payload formats">
+        <option value="flat">Flat JSON</option>
+        <option value="json">Gateway envelope (nested sub-devices)</option>
+        <option value="enocean_gw">EnOcean gateway telegrams (sensorN / dataM)</option>
+        <option value="array">Array of device objects (iterate)</option>
+        <option value="zigbee2mqtt">zigbee2mqtt (per-device / bridged)</option>
+        <option value="tag_array">Self-describing tag array</option>
+        <option value="kv">key=value pairs</option>
+        <option value="csv">CSV row</option>
+        <option value="binary">Modbus float32 registers (hex)</option>
+        <option value="raw_number">Single bare number</option>
+      </optgroup>
+      <optgroup label="Other / liveness / testing">
+        <option value="opcua">OPC-UA style datapoints</option>
+        <option value="raw">EnOcean raw telegram (hex)</option>
+        <option value="status">Liveness status (online)</option>
+        <option value="template">Custom template</option>
+      </optgroup>
+    </select>
+    <div class="full" id="btmplWrap" style="display:none">
+      <label class="fn" style="display:block;margin-bottom:4px">Template</label>
+      <textarea id="b_template" rows="4" placeholder='{"temp": {{temperature}}, "ts": "{{ts}}"}'></textarea>
+      <div class="hint" style="grid-column:auto">Placeholders: {{point}}, {{ts}}, {{epoch}}, {{epoch_ms}}, {{name}}, {{seq}}, {{rand(a,b)}}, {{randint(a,b)}}, {{bool}}</div>
+    </div>
+    <label class="fn">Pub Topic</label><input type="text" id="b_topic">
+    <div class="hint" id="btopicHint"></div>
+    <label class="fn">Pub Qos</label><div class="radios">
+      <label><input type="radio" name="b_qos" value="0"> 0</label>
+      <label><input type="radio" name="b_qos" value="1" checked> 1</label>
+      <label><input type="radio" name="b_qos" value="2"> 2</label></div>
+    <label class="fn">Pub Retain</label><div class="radios">
+      <label><input type="radio" name="b_ret" value="1"> Enabled</label>
+      <label><input type="radio" name="b_ret" value="0" checked> Disabled</label></div>
+    <label class="fn">Pub Mode</label><select id="b_mode" onchange="bmodeChanged()">
+      <option value="periodic">Periodic</option>
+      <option value="cov">COV (change of value)</option>
+      <option value="manual">Manual (on demand)</option>
+    </select>
+    <label class="fn" id="b_lbl_interval">Pub Interval (s)</label><input type="number" id="b_interval" value="10">
+    <div class="full" id="bcovWrap" style="display:none">
+      <table><tbody>
+        <tr><td class="fieldname">COV deadband (abs)</td><td><input type="number" id="b_cov_deadband" value="0.5" step="0.1"></td>
+            <td class="fieldname">Min interval (s)</td><td><input type="number" id="b_cov_min_interval" value="2"></td>
+            <td class="fieldname">Heartbeat (s, 0=off)</td><td><input type="number" id="b_cov_heartbeat" value="300"></td></tr>
+      </tbody></table>
+    </div>
+    <label class="fn">Pub Type</label><div class="radios">
+      <label><input type="radio" name="b_ptype" value="processed" checked> Processed</label>
+      <label><input type="radio" name="b_ptype" value="raw"> Raw</label></div>
+  </div>
+  <div class="foot">
+    <span class="err" id="bindErr"></span>
+    <button onclick="closeOverlays()">Cancel</button>
+    <button class="pri" onclick="saveBind()">Save</button>
+  </div>
+</div>
+</div>
+
+<div class="overlay" id="subOverlay">
+<div class="modal" style="min-width:480px;max-width:560px">
+  <h3>Sub Configuration</h3>
+  <div class="body">
+    <label class="fn">Connection</label><select id="s_connection"><option>1</option><option>2</option><option>3</option><option>4</option></select>
+    <label class="fn">Enable</label><div class="radios">
+      <label><input type="radio" name="s_en" value="1" checked> Enabled</label>
+      <label><input type="radio" name="s_en" value="0"> Disabled</label></div>
+    <label class="fn">Sub Type</label><select id="s_sub_type">
+      <option value="command">Command / downlink</option>
+      <option value="echo">Echo / self-test</option>
+      <option value="monitor">Monitor (wildcard)</option>
+    </select>
+    <label class="fn">Sub Topic</label><input type="text" id="s_topic" placeholder="devices/+/cmd">
+    <label class="fn">Sub Qos</label><div class="radios">
+      <label><input type="radio" name="s_qos" value="0" checked> 0</label>
+      <label><input type="radio" name="s_qos" value="1"> 1</label>
+      <label><input type="radio" name="s_qos" value="2"> 2</label></div>
+  </div>
+  <div class="foot">
+    <button onclick="closeOverlays()">Cancel</button>
+    <button class="pri" onclick="saveSub()">Save</button>
+  </div>
+</div>
+</div>
+
+<script>
+let STATE = {connections:[],devices:[],bindings:[],subs:[],catalog:{kinds:{},datatypes:[],sim_modes:[],presets:{}}};
+let gsIndex = 1, gsDirty = false, logSeq = 0;
+let editDevId = null, editBindId = null, editSubId = null;
+
+const $ = id => document.getElementById(id);
+const radio = (name, val) => { document.querySelectorAll(`input[name=${name}]`).forEach(r => r.checked = (String(r.value) === String(val))); };
+const radioVal = name => { const r = document.querySelector(`input[name=${name}]:checked`); return r ? r.value : null; };
+async function api(method, url, body){
+  const res = await fetch(url, {method, headers:{'Content-Type':'application/json'},
+    body: body===undefined?undefined:JSON.stringify(body)});
+  if(!res.ok){ const t = await res.text(); throw new Error(t); }
+  return res.json();
+}
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const fmtVal = v => typeof v==='number' ? v : (typeof v==='boolean' ? (v?'true':'false') : String(v));
+
+function showPage(p){
+  document.querySelectorAll('.page').forEach(x=>x.classList.remove('on'));
+  $('page-'+p).classList.add('on');
+  document.querySelectorAll('nav a[data-page]').forEach(a=>a.classList.toggle('active', a.dataset.page===p));
+  $('crumb').textContent = {devices:'Devices',publish:'Publish',subscribe:'Subscribe',conns:'IoT > MQTT',monitor:'Monitor'}[p]||p;
+}
+
+/* ---------- polling ---------- */
+async function refresh(){
+  try{
+    STATE = await api('GET','/api/state');
+    renderConnList(); renderDevices(); renderBindings(); renderSubs();
+    if(!gsDirty) loadConnForm(gsIndex, true);
+    renderTabs();
+  }catch(e){ console.error(e); }
+}
+async function pollLogs(){
+  try{
+    const d = await api('GET','/api/logs?since='+logSeq);
+    if(d.logs.length){
+      const box = $('logBox');
+      const atBottom = box.scrollTop + box.clientHeight >= box.scrollHeight - 30;
+      for(const l of d.logs){
+        logSeq = Math.max(logSeq, l.seq);
+        const div = document.createElement('div');
+        div.className = l.kind;
+        div.textContent = l.ts.substring(11,19)+'  '+l.text;
+        box.appendChild(div);
+      }
+      while(box.children.length > 500) box.removeChild(box.firstChild);
+      if(atBottom) box.scrollTop = box.scrollHeight;
+    }
+    const m = await api('GET','/api/messages');
+    $('msgBox').innerHTML = m.messages.slice(-200).map(x =>
+      `<div class="sub">${esc(x.ts.substring(11,19))}  [c${x.connection}] ${esc(x.topic)}\n  ${esc(x.payload.substring(0,300))}</div>`).join('');
+  }catch(e){}
+}
+
+/* ---------- connections ---------- */
+function renderConnList(){
+  const tb = $('connList').querySelector('tbody');
+  tb.innerHTML = STATE.connections.map(c => {
+    const en = c.enabled;
+    const cls = (c.status||'').split(':')[0].split(' ')[0];
+    return `<tr>
+      <td>${c.index}</td>
+      <td class="${en?'en':'dis'}">${en?'Enabled':'Disabled'}</td>
+      <td>${en?esc(c.name||'-'):'-'}</td>
+      <td>${en?esc(c.client_id||'(auto)'):'-'}</td>
+      <td>${en?esc(c.host||'-'):'-'}</td>
+      <td>${en?(c.host?c.port:'-'):'-'}</td>
+      <td class="status ${cls}">${en?esc(c.status):'-'}</td>
+      <td>${en ? (c.started
+        ? `<button class="sm dng" onclick="connStop(${c.index})">Stop</button>`
+        : `<button class="sm pri" onclick="connStart(${c.index})">Start</button>`) : '-'}
+      </td></tr>`;
+  }).join('');
+}
+async function connStart(i){ await api('POST',`/api/connections/${i}/start`); refresh(); }
+async function connStop(i){ await api('POST',`/api/connections/${i}/stop`); refresh(); }
+function renderTabs(){
+  $('gsTabs').innerHTML = STATE.connections.map(c =>
+    `<button class="${c.index===gsIndex?'on':''}" onclick="switchGs(${c.index})">${c.index}${c.enabled?' ●':''}</button>`).join('');
+}
+function switchGs(i){ gsIndex = i; gsDirty = false; loadConnForm(i); renderTabs(); }
+function loadConnForm(i, soft){
+  const c = STATE.connections.find(x=>x.index===i); if(!c) return;
+  if(soft && gsDirty) return;
+  radio('gs_en', c.enabled?1:0);
+  $('gs_name').value=c.name; $('gs_client_id').value=c.client_id;
+  $('gs_host').value='mqtt.nabha.cloud'; $('gs_port').value=1883;  // locked to nabha-cloud
+  $('gs_username').value=c.username; $('gs_password').value=c.password;
+  radio('gs_tls', c.tls?1:0);
+  $('gs_timeout').value=c.timeout; $('gs_keepalive').value=c.keepalive;
+  radio('gs_ver', c.version);
+  $('gs_lwt_topic').value=c.lwt_topic; radio('gs_lwtq', c.lwt_qos);
+  radio('gs_lwtr', c.lwt_retain?1:0); $('gs_lwt_payload').value=c.lwt_payload;
+}
+document.querySelectorAll('.gs input, .gs textarea').forEach(el =>
+  el.addEventListener('input', ()=> gsDirty = true));
+document.querySelectorAll('.gs input[type=radio]').forEach(el =>
+  el.addEventListener('change', ()=> gsDirty = true));
+async function saveConn(){
+  await api('PUT', '/api/connections/'+gsIndex, {
+    enabled: radioVal('gs_en')==='1',
+    name: $('gs_name').value, client_id: $('gs_client_id').value,
+    host: $('gs_host').value.trim(), port: +$('gs_port').value,
+    username: $('gs_username').value, password: $('gs_password').value,
+    tls: radioVal('gs_tls')==='1',
+    timeout: +$('gs_timeout').value, keepalive: +$('gs_keepalive').value,
+    version: radioVal('gs_ver'),
+    lwt_topic: $('gs_lwt_topic').value, lwt_qos: +radioVal('gs_lwtq'),
+    lwt_retain: radioVal('gs_lwtr')==='1', lwt_payload: $('gs_lwt_payload').value,
+  });
+  gsDirty = false;
+  $('gsMsg').textContent = 'Saved ✓ (index '+gsIndex+')';
+  setTimeout(()=> $('gsMsg').textContent='', 2500);
+  refresh();
+}
+
+/* ---------- devices ---------- */
+function deviceRowsInOrder(){
+  // gateways first, each followed by its sub-devices; then standalones
+  const rows = [];
+  const subsOf = id => STATE.devices.filter(d=>d.parent===id);
+  for(const d of STATE.devices.filter(d=>d.kind==='gateway')){
+    rows.push({d, sub:false});
+    subsOf(d.id).forEach(s=>rows.push({d:s, sub:true}));
+  }
+  STATE.devices.filter(d=>d.kind!=='gateway' && !d.parent).forEach(d=>rows.push({d, sub:false}));
+  // orphans with a parent that isn't a gateway anymore
+  STATE.devices.filter(d=>d.parent && !STATE.devices.some(g=>g.id===d.parent))
+    .forEach(d=>rows.push({d, sub:false}));
+  return rows;
+}
+function renderDevices(){
+  const tb = $('devList').querySelector('tbody');
+  const rows = deviceRowsInOrder();
+  tb.innerHTML = rows.map((r,i) => {
+    const d = r.d;
+    const parent = d.parent ? (STATE.devices.find(x=>x.id===d.parent)||{}).name||'?' : '—';
+    const lv = Object.entries(d.live_values||{}).slice(0,5)
+      .map(([k,v])=>`${esc(k)}=${esc(fmtVal(v))}`).join('<br>');
+    const dtypes = (d.points||[]).map(p=>p.datatype);
+    const summary = `${(d.points||[]).length} pts` +
+      (dtypes.length ? ` <span class="small">(${[...new Set(dtypes)].join(', ')})</span>` : '');
+    return `<tr>
+      <td>${i+1}</td>
+      <td class="l">${r.sub?'<span class="sublabel">└─ </span>':''}<b>${esc(d.name)}</b></td>
+      <td><span class="kindchip kind-${esc(d.kind)}">${esc(STATE.catalog.kinds[d.kind]||d.kind)}</span>${r.sub?'<br><span class="sublabel">sub-device</span>':''}</td>
+      <td>${esc(parent)}</td>
+      <td>${esc(d.address||'-')}</td>
+      <td>${esc(d.preset||'-')}</td>
+      <td class="l">${summary}</td>
+      <td class="l live">${lv}</td>
+      <td>
+        <button class="sm" onclick="openDev('${d.id}')">Edit</button>
+        <button class="sm dng" onclick="delDev('${d.id}')">Del</button>
+      </td></tr>`;
+  }).join('') || '<tr><td colspan="9" class="small">No devices — click “+ Add Device”.</td></tr>';
+}
+function kindChanged(){
+  const kind = $('d_kind').value;
+
+  const presets = STATE.catalog.presets[kind] || {};
+  $('d_preset').innerHTML = '<option value="">— custom (keep points below) —</option>' +
+    Object.entries(presets).map(([k,v])=>`<option value="${k}">${esc(v.label)}</option>`).join('');
+
+  $('d_parent').disabled = (kind === 'gateway');
+  if(kind === 'gateway') $('d_parent').value = '';
+}
+function fillParentSelect(excludeId){
+  const gws = STATE.devices.filter(d=>d.kind==='gateway' && d.id!==excludeId);
+  $('d_parent').innerHTML = '<option value="">— none (standalone) —</option>' +
+    gws.map(g=>`<option value="${g.id}">${esc(g.name)}</option>`).join('');
+}
+function pointRowHtml(p){
+  p = p || {name:'', datatype:'float', sim:'walk', min:0, max:100, step:2.5, unit:'', decimals:2, values:[]};
+  const dts = STATE.catalog.datatypes.map(t=>`<option ${t===p.datatype?'selected':''}>${t}</option>`).join('');
+  const sims = STATE.catalog.sim_modes.map(t=>`<option ${t===p.sim?'selected':''}>${t}</option>`).join('');
+  return `<tr>
+    <td><input type="text" class="pt_name" value="${esc(p.name)}" placeholder="temperature"></td>
+    <td><select class="pt_dt" onchange="ptTypeChanged(this)">${dts}</select></td>
+    <td><select class="pt_sim">${sims}</select></td>
+    <td style="width:70px"><input type="number" step="any" class="pt_min" value="${p.min}"></td>
+    <td style="width:70px"><input type="number" step="any" class="pt_max" value="${p.max}"></td>
+    <td style="width:80px"><input type="number" step="any" class="pt_step" value="${p.step}"></td>
+    <td style="width:64px"><input type="text" class="pt_unit" value="${esc(p.unit||'')}"></td>
+    <td style="width:52px"><input type="number" class="pt_dec" value="${p.decimals}"></td>
+    <td><input type="text" class="pt_vals" value="${esc((p.values||[]).join(','))}" placeholder="ON,OFF"></td>
+    <td style="width:70px"><input type="text" class="pt_init" value="${p.init==null?'':esc(String(p.init))}" placeholder="auto"></td>
+    <td><button class="sm dng" onclick="this.closest('tr').remove()">✕</button></td>
+  </tr>`;
+}
+function addPointRow(p){
+  const tb = $('pointsGrid').querySelector('tbody');
+  tb.insertAdjacentHTML('beforeend', pointRowHtml(p));
+  applyPtFields(tb.lastElementChild);
+}
+
+function ptTypeChanged(sel){
+  const tr = sel.closest('tr'), dt = sel.value;
+  const d = (STATE.catalog.datatype_defaults||{})[dt];
+  if(d){
+    tr.querySelector('.pt_min').value = d.min;
+    tr.querySelector('.pt_max').value = d.max;
+    tr.querySelector('.pt_step').value = d.step;
+    tr.querySelector('.pt_dec').value = d.decimals;
+    const v = tr.querySelector('.pt_vals');
+    if(!v.value.trim() && (d.values||[]).length) v.value = d.values.join(',');
+  }
+  applyPtFields(tr);
+}
+function applyPtFields(tr){
+  const dt = tr.querySelector('.pt_dt').value;
+  const on = (STATE.catalog.datatype_fields||{})[dt] || ['min','max','step','unit','decimals'];
+  const map = {min:'.pt_min', max:'.pt_max', step:'.pt_step', unit:'.pt_unit',
+               decimals:'.pt_dec', values:'.pt_vals'};
+  for(const [f, q] of Object.entries(map)){
+    const el = tr.querySelector(q); if(!el) continue;
+    const use = on.includes(f);
+    el.disabled = !use;
+    el.style.background = use ? '' : '#eceff3';
+    el.style.opacity = use ? 1 : .45;
+    el.title = use ? '' : `not used for ${dt} points`;
+  }
+  const prob = (dt==='bool' || dt==='enum' || dt==='string');
+  const st = tr.querySelector('.pt_step');
+  st.title = prob ? 'probability of change per tick (0–1)' : 'max change per tick';
+  st.placeholder = prob ? '0.05' : '2.5';
+  const v = tr.querySelector('.pt_vals');
+  v.placeholder = (dt==='enum'||dt==='string') ? 'required — e.g. ON,OFF' : '—';
+}
+function loadPreset(){
+  const kind = $('d_kind').value, pk = $('d_preset').value;
+  const preset = (STATE.catalog.presets[kind]||{})[pk];
+  if(!preset) return;
+  $('pointsGrid').querySelector('tbody').innerHTML = '';
+  preset.points.forEach(p=>addPointRow(p));
+}
+function initVal(s){
+  s = (s||'').trim();
+  if(s==='') return null;
+  if(s==='true') return true; if(s==='false') return false;
+  const n = Number(s);
+  return isNaN(n) ? s : n;
+}
+function collectPoints(){
+  return [...$('pointsGrid').querySelectorAll('tbody tr')].map(tr => ({
+    name: tr.querySelector('.pt_name').value.trim(),
+    datatype: tr.querySelector('.pt_dt').value,
+    sim: tr.querySelector('.pt_sim').value,
+    min: +tr.querySelector('.pt_min').value || 0,
+    max: +tr.querySelector('.pt_max').value || 0,
+    step: +tr.querySelector('.pt_step').value || 0,
+    unit: tr.querySelector('.pt_unit').value,
+    decimals: +tr.querySelector('.pt_dec').value || 0,
+    values: tr.querySelector('.pt_vals').value.split(',').map(s=>s.trim()).filter(Boolean),
+    init: initVal(tr.querySelector('.pt_init').value),
+  })).filter(p=>p.name);
+}
+function openDev(id){
+  editDevId = id;
+  $('devErr').textContent = '';
+  $('d_kind').innerHTML = Object.entries(STATE.catalog.kinds)
+    .map(([k,v])=>`<option value="${k}">${esc(v)}</option>`).join('');
+  fillParentSelect(id);
+  const d = STATE.devices.find(x=>x.id===id);
+  $('devTitle').textContent = d ? 'Edit Device · '+d.name : 'Add Device';
+  if(d){
+    $('d_name').value = d.name; $('d_kind').value = d.kind;
+    kindChanged();
+    $('d_parent').value = d.parent||''; $('d_address').value = d.address||'';
+    if(d.preset) $('d_preset').value = d.preset;
+    $('pointsGrid').querySelector('tbody').innerHTML = '';
+    (d.points||[]).forEach(p=>addPointRow(p));
+    renderLiveOverrides(d);
+  } else {
+    $('d_name').value = 'device-'+(STATE.devices.length+1);
+    $('d_kind').value = 'direct'; kindChanged();
+    $('d_parent').value=''; $('d_address').value='';
+    $('pointsGrid').querySelector('tbody').innerHTML = '';
+    addPointRow();
+    $('liveWrap').innerHTML = '';
+  }
+  $('devOverlay').classList.add('show');
+}
+function renderLiveOverrides(d){
+  const lv = d.live_values||{};
+  $('liveWrap').innerHTML = Object.keys(lv).length ?
+    '<label class="fn" style="display:block;margin:6px 0 4px">Live values (override to force COV / test)</label>' +
+    Object.entries(lv).map(([k,v]) => `
+      <div class="pointrow">
+        <span style="min-width:130px">${esc(k)}</span>
+        <span class="pv">${esc(fmtVal(v))}</span>
+        <input type="text" id="ov_${esc(k)}" placeholder="new value" style="width:130px;padding:3px 6px">
+        <button class="sm" onclick="overridePoint('${d.id}','${esc(k)}')">Set</button>
+      </div>`).join('') : '';
+}
+async function overridePoint(did, name){
+  const raw = $('ov_'+name).value;
+  if(raw==='') return;
+  const num = Number(raw);
+  await api('POST',`/api/devices/${did}/point`, {name, value: isNaN(num) ? raw : num});
+}
+async function saveDev(){
+  const points = collectPoints();
+  if(!$('d_name').value.trim()){ $('devErr').textContent = 'Name required'; return; }
+
+  const noVals = points.find(p => (p.datatype==='enum'||p.datatype==='string') && !p.values.length);
+  if(noVals){
+    $('devErr').textContent = `Point "${noVals.name}" is ${noVals.datatype} — add at least one option in "Enum values"`;
+    return;
+  }
+  const dup = points.map(p=>p.name).find((n,i,a)=>a.indexOf(n)!==i);
+  if(dup){ $('devErr').textContent = `Duplicate point name "${dup}" — names must be unique`; return; }
+  try{
+    await api('POST','/api/devices', {
+      id: editDevId || undefined,
+      name: $('d_name').value.trim(),
+      kind: $('d_kind').value,
+      parent: $('d_parent').value,
+      address: $('d_address').value.trim(),
+      preset: $('d_preset').value,
+      points,
+    });
+    closeOverlays(); refresh();
+  }catch(e){ $('devErr').textContent = e.message.substring(0,120); }
+}
+async function delDev(id){
+  const d = STATE.devices.find(x=>x.id===id);
+  const nb = STATE.bindings.filter(b=>b.device===id).length;
+  if(confirm(`Delete device "${d?d.name:id}"${nb?` and its ${nb} pub binding(s)`:''}?`)){
+    await api('DELETE','/api/devices/'+id); refresh();
+  }
+}
+
+const FMT_LABEL = {flat:'Flat JSON (json)', json:'Envelope (iterate)', enocean_gw:'EnOcean gateway (sensorN)', array:'Device array (iterate)', zigbee2mqtt:'zigbee2mqtt', tag_array:'Tag array (tag_array)',
+                   kv:'key=value (keyvalue)', csv:'CSV (csv)', binary:'Modbus hex (binary)',
+                   raw_number:'Bare number (raw_number)', opcua:'OPC-UA points',
+                   raw:'EnOcean raw', status:'Liveness', template:'Template'};
+function renderBindings(){
+  const tb = $('bindList').querySelector('tbody');
+  tb.innerHTML = STATE.bindings.map((b,i) => {
+    const d = STATE.devices.find(x=>x.id===b.device);
+    const devLabel = d ? `<b>${esc(d.name)}</b><br><span class="small">${esc(STATE.catalog.kinds[d.kind]||d.kind)}${b.include_children?' + sub-devices':''}</span>`
+                       : '<span class="err">missing device</span>';
+    return `<tr>
+      <td>${i+1}</td><td>${b.connection}</td>
+      <td class="${b.enabled?'en':'dis'}">${b.enabled?'Enabled':'Disabled'}</td>
+      <td class="l">${devLabel}</td>
+      <td>${esc(FMT_LABEL[b.data_format]||b.data_format)}</td>
+      <td class="l"><span class="tag">${esc(b.topic || (d?`device/${d.name}/${d.kind}`:'-'))}</span></td>
+      <td>${b.qos}</td><td>${b.retain?'Enabled':'Disabled'}</td>
+      <td>${b.mode==='cov'?'COV':(b.mode==='manual'?'Manual':'Periodic')}</td>
+      <td>${b.mode==='periodic'?b.interval:(b.mode==='cov'?('db '+b.cov_deadband):'-')}</td>
+      <td>${esc(b.pub_type)}</td>
+      <td>
+        <button class="sm" onclick="openBind('${b.id}')">Edit</button>
+        <button class="sm" onclick="bindNow('${b.id}')">Pub</button>
+        <button class="sm dng" onclick="delBind('${b.id}')">Del</button>
+      </td></tr>`;
+  }).join('') || '<tr><td colspan="12" class="small">No pub configurations — add devices first, then “+ Add Pub”.</td></tr>';
+}
+function bindDevChanged(){
+  const d = STATE.devices.find(x=>x.id===$('b_device').value);
+  const isGw = d && d.kind==='gateway';
+  document.querySelectorAll('input[name=b_inc]').forEach(r=>r.disabled = !isGw);
+  if(!isGw) radio('b_inc', 0);
+  bTopicHint();
+}
+function bTopicHint(){
+  const fmt = $('b_data_format').value;
+  const d = STATE.devices.find(x=>x.id===$('b_device').value);
+  const STRUCTURED_FMT = ['flat','json','tag_array','kv','csv','binary','raw_number'];
+  let hint = '';
+  if(fmt==='enocean_gw') hint = 'EnOcean-to-MQTT gateway dump: every attached sub-device becomes a <b>sensorN</b> with <b>data0</b> (its EEP reading) + <b>data1/2/3</b> (energy/harvester/battery). Values are strings; sensorN order shuffles each publish (identity is the nested <b>deviceId</b>). <b>Always aggregates sub-devices</b> — attach EnOcean devices to this gateway first.';
+  else if(fmt==='array') hint = 'Array-of-objects gateway multiplex: <b>{"devices":[{deviceId,...},…], "ts"}</b> — one element per attached sub-device (a standalone/direct device is a one-element array). Order shuffles each publish; bind by the <b>deviceId</b> value, not the index.';
+  else if(fmt==='zigbee2mqtt') hint = 'zigbee2mqtt shape: a standalone/direct device publishes <b>pure flat JSON</b> (temperature/humidity/battery/linkquality…, no envelope). A gateway aggregates its children into an object <b>keyed by friendly name</b>.';
+  else if(STRUCTURED_FMT.includes(fmt)) hint = 'Structured payload published to your topic (QoS 1, retain off is a common convention). Point it wherever your broker/consumer expects the data.';
+  else if(fmt==='status') hint = 'Liveness → your status topic, e.g. <b>devices/&lt;id&gt;/status</b>. Pair with LWT {"online": false} on the connection.';
+  else if(fmt==='opcua') hint = 'OPC-UA style datapoint shape (server_name / node_id / value / quality / timestamp).';
+  else if(fmt==='raw') hint = 'EnOcean ESP3 hex telegram, wrapped in a small JSON envelope.';
+  else if(d && d.kind==='enocean') hint = 'Gateway style → <b>device/&lt;name&gt;/enocean</b>';
+  else hint = 'Empty topic ⇒ defaults to device/&lt;name&gt;/&lt;kind&gt;';
+  $('btopicHint').innerHTML = hint;
+}
+function bfmtChanged(){
+  const fmt = $('b_data_format').value;
+  $('btmplWrap').style.display = fmt==='template' ? '' : 'none';
+
+  const MULTIPLEX = ['enocean_gw','array','zigbee2mqtt'];
+  const d = STATE.devices.find(x=>x.id===$('b_device').value);
+  if(MULTIPLEX.includes(fmt) && d && d.kind==='gateway') radio('b_inc', 1);
+  bTopicHint();
+}
+function bmodeChanged(){
+  const m = $('b_mode').value;
+  $('bcovWrap').style.display = m==='cov' ? '' : 'none';
+  $('b_interval').disabled = m!=='periodic';
+  $('b_lbl_interval').style.opacity = m==='periodic'?1:.45;
+}
+function openBind(id){
+  editBindId = id;
+  $('bindErr').textContent = '';
+  if(!STATE.devices.length){ alert('Add a device first (Devices page).'); return; }
+  $('b_device').innerHTML = STATE.devices.map(d =>
+    `<option value="${d.id}">${esc(d.name)} (${esc(STATE.catalog.kinds[d.kind]||d.kind)}${d.parent?', sub':''})</option>`).join('');
+  const b = STATE.bindings.find(x=>x.id===id);
+  $('bindTitle').textContent = b ? 'Edit Pub' : 'Add Pub Configuration';
+  if(b){
+    $('b_connection').value = b.connection; radio('b_en', b.enabled?1:0);
+    $('b_device').value = b.device; radio('b_inc', b.include_children?1:0);
+    $('b_data_format').value = b.data_format; $('b_template').value = b.template||'';
+    $('b_topic').value = b.topic; radio('b_qos', b.qos); radio('b_ret', b.retain?1:0);
+    $('b_mode').value = b.mode; $('b_interval').value = b.interval;
+    $('b_cov_deadband').value = b.cov_deadband; $('b_cov_min_interval').value = b.cov_min_interval;
+    $('b_cov_heartbeat').value = b.cov_heartbeat;
+    radio('b_ptype', b.pub_type);
+  } else {
+    $('b_connection').value = 1; radio('b_en',1);
+    radio('b_inc',0);
+    $('b_data_format').value='flat'; $('b_template').value='';
+    $('b_topic').value=''; radio('b_qos',1); radio('b_ret',0);
+    $('b_mode').value='periodic'; $('b_interval').value=10;
+    $('b_cov_deadband').value=0.5; $('b_cov_min_interval').value=2; $('b_cov_heartbeat').value=300;
+    radio('b_ptype','processed');
+  }
+  bindDevChanged(); bfmtChanged(); bmodeChanged();
+  $('bindOverlay').classList.add('show');
+}
+async function saveBind(){
+  try{
+    await api('POST','/api/bindings', {
+      id: editBindId || undefined,
+      connection: +$('b_connection').value,
+      enabled: radioVal('b_en')==='1',
+      device: $('b_device').value,
+      include_children: radioVal('b_inc')==='1',
+      data_format: $('b_data_format').value,
+      template: $('b_template').value,
+      topic: $('b_topic').value.trim(),
+      qos: +radioVal('b_qos'), retain: radioVal('b_ret')==='1',
+      mode: $('b_mode').value, interval: +$('b_interval').value,
+      pub_type: radioVal('b_ptype'),
+      cov_deadband: +$('b_cov_deadband').value,
+      cov_min_interval: +$('b_cov_min_interval').value,
+      cov_heartbeat: +$('b_cov_heartbeat').value,
+    });
+    closeOverlays(); refresh();
+  }catch(e){ $('bindErr').textContent = e.message.substring(0,120); }
+}
+async function bindNow(id){ await api('POST',`/api/bindings/${id}/publish`); }
+async function delBind(id){ if(confirm('Delete this pub configuration?')){ await api('DELETE','/api/bindings/'+id); refresh(); } }
+
+function renderSubs(){
+  const tb = $('subList').querySelector('tbody');
+  tb.innerHTML = STATE.subs.map((s,i)=>`<tr>
+    <td>${i+1}</td><td>${s.connection}</td>
+    <td class="${s.enabled?'en':'dis'}">${s.enabled?'Enabled':'Disabled'}</td>
+    <td>${esc(s.sub_type)}</td>
+    <td class="l"><span class="tag">${esc(s.topic)}</span></td>
+    <td>${s.qos}</td>
+    <td><button class="sm" onclick="openSub('${s.id}')">Edit</button>
+        <button class="sm dng" onclick="delSub('${s.id}')">Del</button></td></tr>`).join('')
+    || '<tr><td colspan="7" class="small">No sub configurations — click “+ Add Sub”.</td></tr>';
+}
+function openSub(id){
+  editSubId = id;
+  const s = STATE.subs.find(x=>x.id===id);
+  if(s){
+    $('s_connection').value = s.connection; radio('s_en', s.enabled?1:0);
+    $('s_sub_type').value = s.sub_type; $('s_topic').value = s.topic; radio('s_qos', s.qos);
+  } else {
+    $('s_connection').value = 1; radio('s_en',1);
+    $('s_sub_type').value='command'; $('s_topic').value=''; radio('s_qos',0);
+  }
+  $('subOverlay').classList.add('show');
+}
+async function saveSub(){
+  await api('POST','/api/subs', {
+    id: editSubId || undefined,
+    connection: +$('s_connection').value,
+    enabled: radioVal('s_en')==='1',
+    sub_type: $('s_sub_type').value,
+    topic: $('s_topic').value.trim(),
+    qos: +radioVal('s_qos'),
+  });
+  closeOverlays(); refresh();
+}
+async function delSub(id){ if(confirm('Delete this subscription?')){ await api('DELETE','/api/subs/'+id); refresh(); } }
+
+function closeOverlays(){ document.querySelectorAll('.overlay').forEach(o=>o.classList.remove('show')); }
+document.querySelectorAll('.overlay').forEach(o => o.addEventListener('mousedown', e => { if(e.target===o) closeOverlays(); }));
+
+refresh();
+setInterval(refresh, 2000);
+setInterval(pollLogs, 1500);
+</script>
+</body>
+</html>

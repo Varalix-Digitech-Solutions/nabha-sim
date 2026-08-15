@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="260" height="64" viewBox="0 0 260 64" fill="none" font-family="'Segoe UI', system-ui, -apple-system, 'DejaVu Sans', sans-serif">
+  <defs>
+    <linearGradient id="vgrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#6366f1"/>
+      <stop offset="100%" stop-color="#22d3ee"/>
+    </linearGradient>
+  </defs>
+  <!-- Circuit monogram V -->
+  <path d="M8 12 L28 52 L48 12" stroke="url(#vgrad)" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <line x1="28" y1="52" x2="28" y2="58" stroke="#22d3ee" stroke-width="2" stroke-linecap="round"/>
+  <line x1="8" y1="12" x2="2" y2="12" stroke="#6366f1" stroke-width="2" stroke-linecap="round"/>
+  <line x1="48" y1="12" x2="54" y2="12" stroke="#22d3ee" stroke-width="2" stroke-linecap="round"/>
+  <circle cx="8" cy="12" r="3" fill="#6366f1"/>
+  <circle cx="48" cy="12" r="3" fill="#22d3ee"/>
+  <circle cx="28" cy="52" r="4" fill="#22d3ee"/>
+  <circle cx="28" cy="32" r="2" fill="#8b5cf6"/>
+  <!-- Wordmark (theme-safe: gradient + mid-slate read on light & dark) -->
+  <text x="70" y="34" font-size="24" font-weight="700" fill="url(#vgrad)">Varalix</text>
+  <text x="152" y="34" font-size="24" font-weight="400" fill="#94a3b8">Digitech</text>
+  <text x="70" y="52" font-size="10" font-weight="400" letter-spacing="2" fill="#94a3b8">SOLUTIONS</text>
+</svg>
