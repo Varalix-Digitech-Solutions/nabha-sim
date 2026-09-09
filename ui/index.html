@@ -150,7 +150,7 @@ textarea{height:52px;resize:vertical}
     <tr><td class="fieldname">Name</td><td><input type="text" id="gs_name"></td></tr>
     <tr><td class="fieldname">Client id</td><td><input type="text" id="gs_client_id" placeholder="auto if empty"></td></tr>
     <tr><td class="fieldname">Host</td><td><input type="text" id="gs_host" value="mqtt.nabha.cloud" readonly title="Fixed to the nabha-cloud ingest broker"><span class="small" style="margin-left:8px">🔒 nabha-cloud</span></td></tr>
-    <tr><td class="fieldname">Port</td><td><input type="number" id="gs_port" value="1883" readonly title="Fixed to the nabha-cloud ingest broker"></td></tr>
+    <tr><td class="fieldname">Port</td><td><input type="number" id="gs_port" value="8883" readonly title="Fixed to the nabha-cloud ingest broker"></td></tr>
     <tr><td class="fieldname">User Name</td><td><input type="text" id="gs_username"></td></tr>
     <tr><td class="fieldname">Password</td><td><input type="password" id="gs_password"></td></tr>
     <tr><td class="fieldname">TLS</td><td><div class="radios">
@@ -422,7 +422,7 @@ function loadConnForm(i, soft){
   if(soft && gsDirty) return;
   radio('gs_en', c.enabled?1:0);
   $('gs_name').value=c.name; $('gs_client_id').value=c.client_id;
-  $('gs_host').value='mqtt.nabha.cloud'; $('gs_port').value=1883;  // locked to nabha-cloud
+  $('gs_host').value='mqtt.nabha.cloud'; $('gs_port').value=8883;  // locked to nabha-cloud (TLS listener)
   $('gs_username').value=c.username; $('gs_password').value=c.password;
   radio('gs_tls', c.tls?1:0);
   $('gs_timeout').value=c.timeout; $('gs_keepalive').value=c.keepalive;

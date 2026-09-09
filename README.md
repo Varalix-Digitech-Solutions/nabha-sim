@@ -42,8 +42,9 @@ and stream it straight into nabha-cloud.
   telegram, liveness status, or a fully custom template.
 - **4 connection slots** with TLS, Last-Will-and-Testament, and MQTT v3.1 / v3.1.1 / v5.0.
 - **Pinned to nabha-cloud** — connections target the nabha-cloud ingest broker
-  (`mqtt.nabha.cloud:1883`); host and port are fixed, so you only bring your
-  **device token**. No credentials to configure.
+  (`mqtt.nabha.cloud:8883`, TLS); host and port are fixed, so you only bring
+  your org's **username/password** and **device token** from the app's
+  Connection Details panel.
 - **Human- and script-friendly** — everything the web UI does is plain REST, so
   an automation/agent can drive the exact same fleet.
 
