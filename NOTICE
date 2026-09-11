@@ -1,13 +1,11 @@
 nabha-sim — MQTT device & fleet simulator
 Copyright 2026 Varalix Digitech Solutions
 
-Required Notice: Copyright 2026 Varalix Digitech Solutions
-
-Licensed under the PolyForm Noncommercial License 1.0.0, plus an additional
-grant permitting free evaluation and testing (including by companies), with
-commercial and production use available under a separate commercial license
-from Varalix Digitech Solutions. See the LICENSE file for full terms.
+This program is free software: you can redistribute it and/or modify it under
+the terms of the GNU Affero General Public License as published by the Free
+Software Foundation, either version 3 of the License, or (at your option) any
+later version. See the LICENSE file for the full terms.
 
 "nabha-sim", "Varalix", and the Varalix Digitech Solutions logo are trademarks
-of Varalix Digitech Solutions and are not licensed for use except as required
-to describe the origin of the work.
+of Varalix Digitech Solutions. The licence above covers the code, not the
+trademarks; use them only as needed to describe the origin of the work.

@@ -8,8 +8,7 @@
 
 **Model a whole IoT fleet — gateways, sub-devices, per-point datatypes — then stream it straight into nabha-cloud in any of 11 payload formats. Drive it from a web UI, a REST API, or the `nsim` CLI.**
 
-[![License: PolyForm Noncommercial](https://img.shields.io/badge/License-PolyForm%20Noncommercial%201.0.0-blue.svg)](LICENSE)
-[![Free to try & test](https://img.shields.io/badge/free-to%20try%20%26%20test-2dd4bf.svg)](#-license)
+[![License: AGPL-3.0](https://img.shields.io/badge/License-AGPL--3.0-blue.svg)](LICENSE)
 [![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white)](https://www.python.org/)
 [![MQTT](https://img.shields.io/badge/protocol-MQTT-660066?logo=mqtt&logoColor=white)](https://mqtt.org/)
 [![FastAPI](https://img.shields.io/badge/API-FastAPI-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
@@ -171,24 +170,19 @@ other people find it. Thank you! 🙏
 
 ## 📄 License
 
-nabha-sim is **source-available** under the **PolyForm Noncommercial License
-1.0.0**, plus an evaluation grant — free to use, but **not for commercial or
-production use** without a commercial license.
+nabha-sim is **open source** under the **GNU Affero General Public License,
+version 3 or later** (AGPL-3.0-or-later).
 
-- ✅ **Free** for non-commercial use, evaluation, testing, development, and demos.
-- ✅ **Companies may try and test it for free** — use it to evaluate nabha-cloud,
-  even with a commercial adoption in mind.
-- 🚫 **Not for commercial or production use** — you may not use nabha-sim (or a
-  derivative/hosted version) in commercial operations, or as part of a paid
-  product or service, under the free license.
-- 💼 **Commercial license available** — for commercial or production use,
-  contact **Varalix Digitech Solutions** for a commercial license.
-- 🏷️ **Trademarks are not licensed** — "nabha-sim", "Varalix", and the Varalix
+- ✅ Use it, run it, and modify it freely, commercially or otherwise.
+- 🔁 If you distribute a modified version, or let others use a modified version
+  over a network, you must make your modified source available under the same
+  licence.
+- 🏷️ Trademarks are not licensed: "nabha-sim", "Varalix", and the Varalix
   Digitech Solutions logo remain trademarks of Varalix Digitech Solutions.
 
-This is the same free-community-edition + commercial-license model common in
-industrial-IoT tooling. Full terms in [LICENSE](LICENSE); attribution in
-[NOTICE](NOTICE).
+Full terms in [LICENSE](LICENSE); attribution in [NOTICE](NOTICE). Earlier
+releases were published under the PolyForm Noncommercial License 1.0.0; from
+this commit on, the AGPL applies.
 
 ---
 
