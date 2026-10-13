@@ -13,7 +13,7 @@
 [![MQTT](https://img.shields.io/badge/protocol-MQTT-660066?logo=mqtt&logoColor=white)](https://mqtt.org/)
 [![FastAPI](https://img.shields.io/badge/API-FastAPI-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
 
-⭐ **If nabha-sim saves you time wiring up test devices, please [star the repo](#) — it genuinely helps and takes two seconds.** ⭐
+⭐ **If nabha-sim saves you time wiring up test devices, please [star the repo](https://github.com/Varalix-Digitech-Solutions/nabha-sim) — it genuinely helps and takes two seconds.** ⭐
 
 </div>
 
@@ -55,7 +55,7 @@ and stream it straight into nabha-cloud.
 ## ⚡ Quick start
 
 ```bash
-git clone <your-fork-url> nabha-device-simulator
+git clone https://github.com/Varalix-Digitech-Solutions/nabha-sim.git nabha-device-simulator
 cd nabha-device-simulator
 
 python3 -m venv .venv
@@ -141,7 +141,7 @@ A thin `curl` wrapper over the REST API (needs the server running on `:8765`):
 ./nsim start 1                       # start connection slot 1
 ./nsim pub-now <bindId>              # trigger a manual publish
 ./nsim set <devId> temperature 99    # override a point → triggers COV
-./nsim publish 1 'nabha/ingest/<token>/data' '{"temperature":25.5}' 1
+./nsim publish 1 'orgs/<your-org-id>/telemetry/<thing-token>' '{"temperature":25.5}' 1
 ```
 
 ## 🤝 Contributing
